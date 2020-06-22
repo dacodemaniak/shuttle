@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello Symfony{% endblock %}
+
+{% block body %}
+	<blockquote>
+		Home.hmtl.twig works!
+	</blockquote>
+	
+	{% if id is defined and id %}
+		<pre>{{ id }}</pre>
+		{% if user is defined and user %}
+			<cite>{{ user }}</cite>
+		{% endif %}
+	{% endif %}
+{% endblock %}
