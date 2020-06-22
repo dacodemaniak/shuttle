@@ -1,0 +1,40 @@
+{{ form_start(formResa) }}
+	<div class="row">
+		<div class="col-12">
+			<label>{{ form_label(formResa.lastName) }}</label>
+		    {{ form_widget(formResa.lastName) }}		
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12">
+			<label>{{ form_label(formResa.firstName) }}</label>
+		    {{ form_widget(formResa.firstName) }}		
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12">
+			<label>{{ form_label(formResa.email) }}</label>
+		    {{ form_widget(formResa.email) }}		
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12">
+			<label>{{ form_label(formResa.wishedPlaces) }}</label>
+		    {{ form_widget(formResa.wishedPlaces) }}		
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-12">
+			<button class="btn btn-outline-success">
+				Réserver
+			</button>
+		</div>
+	</div>
+{{ form_end(formResa) }}
+
+<blockquote>
+	{% if customer is defined and customer %}
+		{{ customer.getName() }} has just placed a reservation
+	{% endif %}
+</blockquote>
