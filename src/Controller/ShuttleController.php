@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Entity\Shuttle;
 use App\Form\ReservationType;
 use App\Entity\Customer;
+use App\Service\BookingService;
 
 class ShuttleController extends AbstractController {
     
@@ -93,7 +94,7 @@ class ShuttleController extends AbstractController {
      * 
      * @return Response
      */
-    public function processForm(int $id, Request $request): Response {
+    public function processForm(int $id, Request $request, BookingService $bookingService): Response {
         $customer = new Customer();
         
         $form = $this->createForm(ReservationType::class, $customer);
@@ -101,6 +102,7 @@ class ShuttleController extends AbstractController {
         $form->handleRequest($request);
         
         if ($form->isValid()) {
+            $bookingService->setCustomer($customer);
             
             $shuttle = null;
             $index = 0;
@@ -112,6 +114,10 @@ class ShuttleController extends AbstractController {
                 }
                 $index++;
             }
+            $bookingService->setShuttle($shuttle);
+            
+            $bookingService->persist();
+            
             // Update places for the shuttle
             $shuttle->setPlaces($shuttle->getPlaces() - $customer->getWishedPlaces());
             $this->tours[$tourIndex] = $shuttle;
