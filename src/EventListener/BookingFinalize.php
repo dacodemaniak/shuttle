@@ -19,9 +19,18 @@ class BookingFinalize
         
         // Our logic here
         if ($entity instanceof Booking) {
-            // Update shuttle status if
+            // Decrease available places
             
-            // Send an email to customer
+            $shuttle = $entity->getShuttle();
+            $shuttle->setPlaces($shuttle->getPlaces() - $entity->getPlaces());
+            
+            $manager->persist($shuttle);
+            
+            $manager->flush();
+            
+            // If ever, set status as complete
+            
+            // Process all other logic here
         }
     }
 }

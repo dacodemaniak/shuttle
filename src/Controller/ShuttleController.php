@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Entity\Shuttle;
 use App\Form\ReservationType;
 use App\Entity\Customer;
+use App\Service\BookingFormService;
 use App\Service\BookingService;
 
 class ShuttleController extends AbstractController {
@@ -72,19 +73,28 @@ class ShuttleController extends AbstractController {
     }
     
     /**
+     * @Route("/shuttle/resa", methods={"GET", "HEAD"}, name="all_resa_day")
+     * 
+     * @param BookingService $bookingService
+     * @return Response
+     */
+    public function getDayResa(BookingService $bookingService): Response {
+        return $this->json(
+            $bookingService->getDayResa()
+        );
+    }
+    
+    /**
      * @Route("/shuttle/resa/{id}", name="display_resa_form", methods={"GET", "HEAD"})
      * 
      * @return Response
      */
-    public function displayForm(int $id = null, Customer $customer = null): Response {
-        $form = $this->createForm(ReservationType::class);
+    public function displayForm(int $id, BookingFormService $builder): Response {
         
         return $this->render(
             "shuttle/form.html.twig",
             [
-                "formResa" => $form->createView(),
-                "id" => $id,
-                "customer" => $customer
+                "formResa" => $builder->makeForm()->createView()
             ]
         );
     }
@@ -94,10 +104,10 @@ class ShuttleController extends AbstractController {
      * 
      * @return Response
      */
-    public function processForm(int $id, Request $request, BookingService $bookingService): Response {
+    public function processForm(int $id, Request $request, BookingService $bookingService, BookingFormService $builder): Response {
         $customer = new Customer();
         
-        $form = $this->createForm(ReservationType::class, $customer);
+        $form = $builder->makeForm($customer);
         
         $form->handleRequest($request);
         
@@ -123,6 +133,6 @@ class ShuttleController extends AbstractController {
             $this->tours[$tourIndex] = $shuttle;
         }
         
-        return $this->displayForm($id, $customer);
+        return $this->redirectToRoute("display_resa_form", ["id" => $id]);
     }
 }

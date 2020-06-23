@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=ShuttleRepository::class)
  */
-final class Shuttle {
+class Shuttle {
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()

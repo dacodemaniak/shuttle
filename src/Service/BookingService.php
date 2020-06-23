@@ -46,5 +46,11 @@ class BookingService
             // Finalize transaction
             $this->em->flush();
     }
+    
+    public function getDayResa(): array  {
+        $repo = $this->em->getRepository(Booking::class);
+        
+        return $repo->findByDate(\DateTime::createFromFormat("d-m-Y", "22-06-2020"));
+    }
 }
 
