@@ -8,7 +8,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use App\Entity\Booking;
 
 class ReservationType extends AbstractType
 {
@@ -22,7 +21,7 @@ class ReservationType extends AbstractType
                 EmailType::class
             )
             ->add(
-                "places",
+                "wishedPlaces",
                 ChoiceType::class,
                 [
                     "choices" => $this->makeList()
@@ -34,7 +33,7 @@ class ReservationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver) {
         $resolver->setDefaults([
             // Configure your form options here
-            "data_class" => Booking::class
+            "data_class" => Customer::class
         ]);
     }
     
