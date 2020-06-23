@@ -22,7 +22,7 @@ class Customer
      * @ORM\Column(type="string", length=75)
      * @Assert\NotBlank
      * @Assert\Length(
-     *  min=2
+     *  min=2,
      *  max=75
      * )
      */
