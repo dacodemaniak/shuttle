@@ -6,6 +6,7 @@ use App\Entity\Booking;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
 
 /**
  * @method Booking|null find($id, $lockMode = null, $lockVersion = null)
@@ -26,25 +27,14 @@ class BookingRepository extends ServiceEntityRepository
     /**
      * @return Booking[] Returns an array of Booking objects
     */
-    public function findByDate(\DateTime $date): array
-    {   
+    public function findByDate(\DateTime $date): array {   
         $beginAt = clone $date
             ->setTime("00", "00");
         $endAt = clone $beginAt;
         $endAt->setTime("23", "59");
         
-        $query = $this->manager->createQuery(
-            'SELECT b.places FROM \App\Entity\Booking b join b.shuttle s WHERE s.date BETWEEN :beginAt AND :endAt'
-        );
-        
-        echo $query->getSQL();
-        
-        var_dump(
-            [
-                "beginAt" => $beginAt->format("Y-m-d H:i"),
-                "endAt" => $endAt->format("Y-m-d H:i")
-            ]
-        );
+
+        $query = $this->asDQL();
         
         return $query->execute(
             [
@@ -52,18 +42,6 @@ class BookingRepository extends ServiceEntityRepository
                 "endAt" => $endAt->format("Y-m-d H:i")
             ]
         );
-        
-
-        
-        return $this->createQueryBuilder('b')
-            ->join('b.shuttle', 's')
-            ->andWhere('s.date = :date')
-            ->setParameter('date', $date)
-            ->orderBy('b.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
         
             // SELECT b.*, s.* FROM booking b JOIN shuttle s ON b.shuttle_id = s.id
             // WHERE s.date = '2020-06-22' ORDER BY b.id LIMIT 0, 10
@@ -80,4 +58,25 @@ class BookingRepository extends ServiceEntityRepository
         ;
     }
     */
+    private function asDQL(): Query {
+        return $this->manager->createQuery(
+            'SELECT b.places FROM \App\Entity\Booking b join b.shuttle s WHERE s.date BETWEEN :beginAt AND :endAt'
+        );
+    }
+    
+    private function asBuilder(): Query {
+        return $queryBuilder = $this->createQueryBuilder('b')
+            ->join('b.shuttle', 's')
+            ->add('where', $queryBuilder->expr()->between(
+                    's.date',
+                    ':beginAt',
+                    ':endAt'
+                )
+            )
+            ->setParameter('beginAt', $beginAt)
+            ->setParameter('endAt', $endAt)
+            ->orderBy('b.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery();
+    }
 }
