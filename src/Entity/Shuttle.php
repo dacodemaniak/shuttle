@@ -4,6 +4,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Booking;
 
 /**
  * @ORM\Entity()
@@ -31,11 +32,11 @@ class Shuttle {
     /**
      * @ORM\OneToMany(targetEntity=Booking::class, mappedBy="shuttle", orphanRemoval=true)
      */
-    private $booking;
+    private $bookings;
     
     public function __construct() {
         $this->places = 8;
-        $this->customer = new ArrayCollection();
+        $this->bookings = new ArrayCollection();
     }
     
     public function getId(): ?int {
@@ -75,15 +76,15 @@ class Shuttle {
     /**
      * @return Collection|Booking[]
      */
-    public function getBooking(): Collection
+    public function getBookings(): Collection
     {
-        return $this->booking;
+        return $this->bookings;
     }
 
     public function addBooking(Booking $booking): self
     {
-        if (!$this->customer->contains($booking)) {
-            $this->booking[] = $booking;
+        if (!$this->bookings->contains($booking)) {
+            $this->bookings[] = $booking;
             $booking->setShuttle($this);
         }
 
