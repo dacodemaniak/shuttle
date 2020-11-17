@@ -22,23 +22,6 @@ services:
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
-
-    # Token provider
-    auth_token_user_provider: 
-        class: App\Security\AuthTokenUserProvider
-        arguments: ["@auth_token_repository", "@user_repository"]
-    
-    auth_token_repository: 
-        class: Doctrine/ORM/EntityManager
-        factory: ["@doctrine.orm.entity_manager", "getRepository"]
-        arguments: ["App:AuthToken"]
-    user_repository: 
-        class: Doctrine\ORM\EntityManager
-        factory: ["@doctrine.orm.entity_manager", "getRepository"]
-        arguments: ["App:Entity:User"]
-    auth_token_authenticator: 
-        class: App\Security\AuthTokenAuthenticator
-        arguments: ["@security.http_utils"]
         
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
