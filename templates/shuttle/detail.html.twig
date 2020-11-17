@@ -10,6 +10,43 @@
     <p>Shuttle # {{ id }}</p>
     <p>Places disponibles : {{ shuttle.places }}</p>
     <a role="button" href="{{ path("display_resa_form", {id: id}) }}">Réserver</a>
+    
+    <div class="row">
+        {{ form_start(formResa) }}
+        	<div class="row">
+        		<div class="col-12">
+        			<label>{{ form_label(formResa.lastName) }}</label>
+        		    {{ form_widget(formResa.lastName) }}		
+        		</div>
+        	</div>
+        	<div class="row">
+        		<div class="col-12">
+        			<label>{{ form_label(formResa.firstName) }}</label>
+        		    {{ form_widget(formResa.firstName) }}		
+        		</div>
+        	</div>
+        	<div class="row">
+        		<div class="col-12">
+        			<label>{{ form_label(formResa.email) }}</label>
+        		    {{ form_widget(formResa.email) }}		
+        		</div>
+        	</div>
+        	<div class="row">
+        		<div class="col-12">
+        			<label>{{ form_label(formResa.wishedPlaces) }}</label>
+        		    {{ form_widget(formResa.wishedPlaces) }}		
+        		</div>
+        	</div>
+        	
+        	<div class="row">
+        		<div class="col-12">
+        			<button class="btn btn-outline-success">
+        				Réserver
+        			</button>
+        		</div>
+        	</div>
+        {{ form_end(formResa) }}    
+    </div>
     <nav>
     	<a href="{{ path("shuttle") }}">
     		Retour à la liste

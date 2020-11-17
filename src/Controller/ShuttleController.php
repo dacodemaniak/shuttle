@@ -9,15 +9,27 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Entity\Shuttle;
 use App\Form\ReservationType;
 use App\Entity\Customer;
+
 use App\Service\BookingFormService;
 use App\Service\BookingService;
+
+use App\Service\ResaFormService;
+use Symfony\Component\Form\FormInterface;
+
 
 class ShuttleController extends AbstractController {
     
     private $tours;
     
+    /**
+     * 
+     * @var ResaFormService
+     */
+    private $formService;
     
-    public function __construct() {
+    public function __construct(ResaFormService $formService) {
+        $this->formService = $formService;
+        
         $tour = new Shuttle();
         $tour
             ->setId(1)
@@ -66,7 +78,7 @@ class ShuttleController extends AbstractController {
         }
         
         return $this->render('shuttle/detail.html.twig', [
-            'title' => 'Shuttle detail works!',
+            'formResa' => $this->displayForm(),
              "id" => $id,
             "shuttle" => $tour
         ]);
@@ -89,14 +101,10 @@ class ShuttleController extends AbstractController {
      * 
      * @return Response
      */
-    public function displayForm(int $id, BookingFormService $builder): Response {
-        
-        return $this->render(
-            "shuttle/form.html.twig",
-            [
-                "formResa" => $builder->makeForm()->createView()
-            ]
-        );
+
+    public function displayForm(): FormInterface {
+        return $this->formService->create($this);
+
     }
     
     /**
