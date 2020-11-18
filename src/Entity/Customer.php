@@ -5,12 +5,14 @@ namespace App\Entity;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use App\Helper\ORM\TimestampableTrait;
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
  */
 class Customer
 {
+    use TimestampableTrait;
+    
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()

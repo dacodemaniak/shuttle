@@ -15,9 +15,22 @@ use App\Service\BookingService;
 
 use App\Service\ResaFormService;
 use Symfony\Component\Form\FormInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Booking;
+use App\Helper\EntityManagerTrait;
+use App\Strategy\AvailablePlace\AvailablePlaceStrategyInterface;
+use App\Strategy\AvailablePlace\AvailablePlaceStrategy;
+use App\Helper\Factory\AvailableStrategyFactory;
 
 
 class ShuttleController extends AbstractController {
+    
+    /**
+     * Le trait sera utilisé pour accéder directement
+     * à l'instance courante de l'EntityManagerInterface
+     * instancié par le setter du trait.
+     */
+    use EntityManagerTrait;
     
     private $tours;
     
@@ -27,32 +40,40 @@ class ShuttleController extends AbstractController {
      */
     private $formService;
     
+    /**
+     * 
+     * @var AvailablePlaceStrategyInterface
+     */
+    private $strategy;
+    
     public function __construct(ResaFormService $formService) {
         $this->formService = $formService;
+        
+        $this->strategy = new AvailablePlaceStrategy();
         
         $tour = new Shuttle();
         $tour
             ->setId(1)
-            ->setDate(\DateTime::createFromFormat("d-m-Y H:i", "22-06-2020 08:00"));
+            ->setDate(\DateTime::createFromFormat("d-m-Y H:i", "18-11-2020 08:00"));
 
         $this->tours[] = $tour;
         
         $tour = clone $tour;
         $tour
             
-            ->setDate(\DateTime::createFromFormat("d-m-Y H:i", "22-06-2020 11:00"));
+            ->setDate(\DateTime::createFromFormat("d-m-Y H:i", "18-11-2020 11:00"));
         $this->tours[] = $tour;
         
         $tour = clone $tour;
         $tour
             
-            ->setDate(\DateTime::createFromFormat("d-m-Y H:i", "22-06-2020 14:00"));
+            ->setDate(\DateTime::createFromFormat("d-m-Y H:i", "18-11-2020 14:00"));
         $this->tours[] = $tour;
         
         $tour = clone $tour;
         $tour
             
-            ->setDate(\DateTime::createFromFormat("d-m-Y H:i", "22-06-2020 17:00"));
+            ->setDate(\DateTime::createFromFormat("d-m-Y H:i", "18-11-2020 17:00"));
         $this->tours[] = $tour;
     }
     
@@ -142,5 +163,33 @@ class ShuttleController extends AbstractController {
         }
         
         return $this->redirectToRoute("display_resa_form", ["id" => $id]);
+    }
+    
+    /**
+     * @Route("/shuttle/add/booking", name="add_resa", methods={"GET", "HEAD"})
+     * @return Response
+     */
+    public function poorResa(): Response {
+        $theShuttle = $this->em
+            ->getRepository(Shuttle::class)
+            ->find(10);
+        $before = $theShuttle->getPlaces();
+        
+        $theCustomer = $this->em
+            ->getRepository(Customer::class)
+            ->find(12);
+        
+        $booking = new Booking();
+        $booking
+            ->setCustomer($theCustomer)
+            ->setShuttle($theShuttle)
+            ->setPlaces(3);
+        $this->em->persist($booking);
+        
+        $this->em->flush();
+        
+        // @todo Get the instance of the correct strategy
+        $this->strategy = AvailableStrategyFactory::getStrategy($shuttle->getPlaces());
+        return $this->strategy->send();
     }
 }

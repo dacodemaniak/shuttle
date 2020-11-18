@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=BookingRepository::class)
+ * @ORM\Table(uniqueConstraints={@ORM\UniqueConstraint(name="customer_booking_index", columns={"customer_id", "shuttle_id"})})
  * @ORM\HasLifecycleCallbacks()
  */
 class Booking
@@ -19,7 +20,7 @@ class Booking
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Shuttle::class, inversedBy="booking")
+     * @ORM\ManyToOne(targetEntity=Shuttle::class, inversedBy="bookings")
      * @ORM\JoinColumn(nullable=false)
      */
     private $shuttle;
