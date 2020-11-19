@@ -189,7 +189,7 @@ class ShuttleController extends AbstractController {
         $this->em->flush();
         
         // @todo Get the instance of the correct strategy
-        $this->strategy = AvailableStrategyFactory::getStrategy($shuttle->getPlaces());
+        $this->strategy = AvailableStrategyFactory::getStrategy($shuttle);
         return $this->strategy->send();
     }
 }
