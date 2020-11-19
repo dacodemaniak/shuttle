@@ -38,6 +38,8 @@ services:
 
     App\EventListener\ShuttleBookingListener: 
        $emitter: '%app.notifications.emitter%'
-       
+    
+    App\EventListener\CustomerBookingListener: 
+    
     App\Service\ResaFormService: 
 

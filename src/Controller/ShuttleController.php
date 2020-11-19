@@ -169,7 +169,7 @@ class ShuttleController extends AbstractController {
     }
     
     /**
-     * @Route("/shuttle/add/booking", name="add_resa", methods={"GET", "HEAD"})
+     * @Route("/shuttle/add/booking/{resa}/{customer}", name="add_resa", methods={"GET", "HEAD"})
      * @return Response
      */
     public function poorResa(): Response {
