@@ -17,10 +17,13 @@ use App\Service\ResaFormService;
 use Symfony\Component\Form\FormInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Booking;
+use App\Events;
 use App\Helper\EntityManagerTrait;
 use App\Strategy\AvailablePlace\AvailablePlaceStrategyInterface;
 use App\Strategy\AvailablePlace\AvailablePlaceStrategy;
 use App\Helper\Factory\AvailableStrategyFactory;
+use App\Helper\EventDispatcher\EventDispatcherTrait;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 
 class ShuttleController extends AbstractController {
@@ -30,7 +33,7 @@ class ShuttleController extends AbstractController {
      * à l'instance courante de l'EntityManagerInterface
      * instancié par le setter du trait.
      */
-    use EntityManagerTrait;
+    use EntityManagerTrait, EventDispatcherTrait;
     
     private $tours;
     
@@ -172,21 +175,27 @@ class ShuttleController extends AbstractController {
     public function poorResa(): Response {
         $theShuttle = $this->em
             ->getRepository(Shuttle::class)
-            ->find(10);
+            ->find(11);
         $before = $theShuttle->getPlaces();
         
         $theCustomer = $this->em
             ->getRepository(Customer::class)
-            ->find(12);
+            ->find(11);
         
         $booking = new Booking();
         $booking
             ->setCustomer($theCustomer)
             ->setShuttle($theShuttle)
-            ->setPlaces(3);
+            ->setPlaces(1);
         $this->em->persist($booking);
         
         $this->em->flush();
+        
+        // Triggering the SHUTTLE_BOOKING event
+        $event = new GenericEvent($booking);
+        // Dispatch the event...
+        $this->eventDispatcher->dispatch($event, Events::SHUTTLE_BOOKING);
+        
         
         // @todo Get the instance of the correct strategy
         $this->strategy = AvailableStrategyFactory::getStrategy($shuttle);
