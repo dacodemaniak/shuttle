@@ -26,14 +26,9 @@ class CustomerBookingListener implements EventSubscriberInterface
         $resaId = $request->get('resa');
         $customerId = $request->get('customer');
         
-        $event->setResponse(new Response('Sorry... ' . $resaId . 'isClosed', 403));
-        
-        
-        //dd($event);
     }
     
     public function onKernelControllerArguments(ControllerArgumentsEvent $event): void {
-        dd($event);
     }
 }
 

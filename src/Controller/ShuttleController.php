@@ -25,6 +25,8 @@ use App\Helper\Factory\AvailableStrategyFactory;
 use App\Helper\EventDispatcher\EventDispatcherTrait;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
+use Symfony\Component\Messenger\MessageBusInterface;
+use App\Message\Booking\BookingEnvelop;
 
 class ShuttleController extends AbstractController {
     
@@ -172,7 +174,7 @@ class ShuttleController extends AbstractController {
      * @Route("/shuttle/add/booking/{resa}/{customer}", name="add_resa", methods={"GET", "HEAD"})
      * @return Response
      */
-    public function poorResa(): Response {
+    public function poorResa(MessageBusInterface $bus): Response {
         $theShuttle = $this->em
             ->getRepository(Shuttle::class)
             ->find(11);
@@ -180,7 +182,7 @@ class ShuttleController extends AbstractController {
         
         $theCustomer = $this->em
             ->getRepository(Customer::class)
-            ->find(11);
+            ->find(14);
         
         $booking = new Booking();
         $booking
@@ -196,6 +198,7 @@ class ShuttleController extends AbstractController {
         // Dispatch the event...
         $this->eventDispatcher->dispatch($event, Events::SHUTTLE_BOOKING);
         
+        $bus->dispatch(new BookingEnvelop($booking));
         
         // @todo Get the instance of the correct strategy
         $this->strategy = AvailableStrategyFactory::getStrategy($shuttle);
