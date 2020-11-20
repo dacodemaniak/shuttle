@@ -33,12 +33,18 @@
 			if (message === '') return
 			console.log(`Action : ${sendForm.action}, Méthode : ${sendForm.method}`)
 			
+			const datas = {
+				'resa': 16,
+				'customer': 20,
+				'places': 2
+			}
+			
     		//Fetching messages
     		fetch(sendForm.action, {
     			method: sendForm.method,
-    			body: 'message=' + message,
+    			body: JSON.stringify(datas),
     			headers: new Headers({
-    				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    				'Content-Type': 'application/json; charset=UTF-8'
     			})
     		}).then(() => {
     			input.value = ''
