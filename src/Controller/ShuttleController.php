@@ -27,7 +27,7 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 
 use Symfony\Component\Messenger\MessageBusInterface;
 use App\Message\Booking\BookingEnvelop;
-use Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpStamp;
+use Symfony\Component\Messenger\Transport\AmqpExt\AmqpStamp;
 
 class ShuttleController extends AbstractController {
     
@@ -199,10 +199,12 @@ class ShuttleController extends AbstractController {
         // Dispatch the event...
         //$this->eventDispatcher->dispatch($event, Events::SHUTTLE_BOOKING);
         
-        $stamp = new AmqpStamp('booking');
+        $stamp = new AmqpStamp(
+            'booking'
+        );
         $message = new BookingEnvelop($booking);
         
-        $bus->dispatch($message, $stamp);
+        $bus->dispatch($message, [$stamp]);
         
         // @todo Get the instance of the correct strategy
         $this->strategy = AvailableStrategyFactory::getStrategy(null);
