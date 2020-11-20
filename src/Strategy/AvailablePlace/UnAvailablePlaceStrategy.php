@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 final class UnAvailablePlaceStrategy implements AvailablePlaceStrategyInterface
 {
 
-    public function send(): Response
+    public function send($entityObject): Response
     {
         return new Response('On a plus de place désolé');
     }

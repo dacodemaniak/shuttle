@@ -189,8 +189,8 @@ class ShuttleController extends AbstractController {
         $booking
             ->setCustomer($theCustomer)
             ->setShuttle($theShuttle)
-            ->setPlaces(1);
-        $this->em->persist($booking);
+            ->setPlaces(2);
+        //$this->em->persist($booking);
         
         //$this->em->flush();
         
@@ -207,7 +207,7 @@ class ShuttleController extends AbstractController {
         $bus->dispatch($message, [$stamp]);
         
         // @todo Get the instance of the correct strategy
-        $this->strategy = AvailableStrategyFactory::getStrategy(null);
-        return $this->strategy->send();
+        $this->strategy = AvailableStrategyFactory::getStrategy($booking);
+        return $this->strategy->send($booking);
     }
 }
