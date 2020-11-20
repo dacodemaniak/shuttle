@@ -7,17 +7,17 @@ framework:
             # https://symfony.com/doc/current/messenger.html#transport-configuration
             async:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
-                options: 
-                   exchange: 
-                      name: app
-                      type: direct
-                   queues: 
-                      booking: 
-                         binding_keys: 
-                            - booking
+                #options: 
+                #   exchange: 
+                #      name: app
+                #      type: direct
+                   #queues: 
+                   #   booking: 
+                   #      binding_keys: 
+                   #         - booking
             failed: 'doctrine://default?queue_name=failed'
             # sync: 'sync://'
 
         routing:
             # Route your messages to the transports
-            'App\Message\Booking\BookingEnvelop': async
+            'Symfony\Component\Mercure\Update': async

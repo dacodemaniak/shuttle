@@ -13,4 +13,56 @@
 			<cite>{{ user }}</cite>
 		{% endif %}
 	{% endif %}
+	
+	<form id="message-form" action="{{ path('publishMessage') }}" method="post">
+		<label for="message-input">Message :</label>
+		<input type="text" id="message-input" name="message">
+		
+		<button type="submit" id="send-message">Envoyer</button>
+	</form>
+	<div id="content-receiver"></div>
+{% endblock %}
+
+{% block javascripts %}
+	<script>
+		const receiver = document.getElementById('content-receiver')
+		const input = document.getElementById('message-input')
+		const sendForm = document.getElementById('message-form')
+		
+		const sendMessage = (message) => {
+			if (message === '') return
+			console.log(`Action : ${sendForm.action}, Méthode : ${sendForm.method}`)
+			
+    		//Fetching messages
+    		fetch(sendForm.action, {
+    			method: sendForm.method,
+    			body: 'message=' + message,
+    			headers: new Headers({
+    				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    			})
+    		}).then(() => {
+    			input.value = ''
+    		})
+		}
+		
+		sendForm.addEventListener('submit', (event) => {
+			sendMessage(input.value)
+			event.preventDefault()
+			return false
+		})
+		
+		// Listen to inbound messages
+		const url = new URL('http://localhost:1080/.well-known/mercure?topic=https://example.com/my-private-topic')
+		//url.searchParams.append('topic', 'http://localhost:1080')
+		console.log(`URL : ${url}`)
+		const eventSource = new EventSource(url)
+		eventSource.onmessage = (event) => {
+			const data = JSON.parse(event.data)
+			if (!data.message) {
+				return
+			}
+			receiver.insertAdjacentHTML('beforeend', `<div class="message">${data.message}</div>`)
+		}
+		
+	</script>
 {% endblock %}
