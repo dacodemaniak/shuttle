@@ -27,6 +27,7 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 
 use Symfony\Component\Messenger\MessageBusInterface;
 use App\Message\Booking\BookingEnvelop;
+use Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpStamp;
 
 class ShuttleController extends AbstractController {
     
@@ -174,15 +175,15 @@ class ShuttleController extends AbstractController {
      * @Route("/shuttle/add/booking/{resa}/{customer}", name="add_resa", methods={"GET", "HEAD"})
      * @return Response
      */
-    public function poorResa(MessageBusInterface $bus): Response {
+    public function poorResa(int $resa, int $customer, MessageBusInterface $bus): Response {
         $theShuttle = $this->em
             ->getRepository(Shuttle::class)
-            ->find(11);
+            ->find($resa);
         $before = $theShuttle->getPlaces();
         
         $theCustomer = $this->em
             ->getRepository(Customer::class)
-            ->find(14);
+            ->find($customer);
         
         $booking = new Booking();
         $booking
@@ -191,17 +192,20 @@ class ShuttleController extends AbstractController {
             ->setPlaces(1);
         $this->em->persist($booking);
         
-        $this->em->flush();
+        //$this->em->flush();
         
         // Triggering the SHUTTLE_BOOKING event
-        $event = new GenericEvent($booking);
+        //$event = new GenericEvent($booking);
         // Dispatch the event...
-        $this->eventDispatcher->dispatch($event, Events::SHUTTLE_BOOKING);
+        //$this->eventDispatcher->dispatch($event, Events::SHUTTLE_BOOKING);
         
-        $bus->dispatch(new BookingEnvelop($booking));
+        $stamp = new AmqpStamp('booking');
+        $message = new BookingEnvelop($booking);
+        
+        $bus->dispatch($message, $stamp);
         
         // @todo Get the instance of the correct strategy
-        $this->strategy = AvailableStrategyFactory::getStrategy($shuttle);
+        $this->strategy = AvailableStrategyFactory::getStrategy(null);
         return $this->strategy->send();
     }
 }
